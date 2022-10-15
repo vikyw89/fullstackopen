@@ -44,10 +44,12 @@ const App = () => {
         <h1>
           Anecdote of the day
         </h1>
-        {anecdotes[selected]}
-      </div>
-      <div>
-        has {points[selected]} votes
+        <p>
+          {anecdotes[selected]}
+        </p>
+        <p>
+          has {points[selected]} votes
+        </p>
       </div>
       <div>
         <button onClick={handleVote}>
@@ -61,7 +63,12 @@ const App = () => {
         <h1>
           Anecdote with most votes
         </h1>
+        <p>
           {anecdotes[mostVoted()]}
+        </p>
+        <p>
+          has {Math.max(...points)} votes
+        </p>
       </div>
     </div>
   )
