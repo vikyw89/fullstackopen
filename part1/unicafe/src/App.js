@@ -1,6 +1,8 @@
 import { useState } from 'react'
 
 const StatisticLine = ({text, value}) => {
+  console.log('👉StatisticLine')
+  console.log({text, value})
   return (
     <tr>
       <td>
