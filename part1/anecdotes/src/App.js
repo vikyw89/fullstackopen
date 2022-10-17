@@ -64,14 +64,13 @@ const App = () => {
           Anecdote with most votes
         </h1>
         <p>
-          {anecdotes[mostVoted()]}
+          {anecdotes[mostVoted()]} 
         </p>
         <p>
           has {Math.max(...points)} votes
         </p>
-      </div>
+      </div>accounts
     </div>
   )
 }
-
 export default App
