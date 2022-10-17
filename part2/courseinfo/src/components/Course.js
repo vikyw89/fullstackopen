@@ -6,6 +6,7 @@ const Course = ({course}) => {
         <div>
             <Header header={course.name}/>
             <Content content={course.parts}/>
+            <Total total={course.parts}/>
         </div>
     )
 }
@@ -42,5 +43,21 @@ const Part = ({part}) => {
         </>
     )
 }
+
+const Total = ({total}) => {
+    console.log('Total', total)
+    let totalCourse = 0
+    for (let element of total) {
+        totalCourse += element.exercises
+    }
+    return (
+        <>
+        <p>
+            <b>total of {totalCourse} exercises</b>
+        </p>
+        </>
+    )
+}
+
 
 export default Course
