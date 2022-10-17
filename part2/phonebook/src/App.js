@@ -9,7 +9,7 @@ const App = () => {
   ])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
-  const [filter, setNewFilter] = useState('')
+  const [newFilter, setNewFilter] = useState('')
 
   const addPerson = (event) => {
     console.log('addPerson')
@@ -32,27 +32,27 @@ const App = () => {
     setNewNumber('')
   }
 
-  const HandleNameChange = (event) => {
+  const handleNameChange = (event) => {
     console.log(event.target.value)
     setNewName(event.target.value)
   }
 
-  const HandleNumberChange = (event) => {
+  const handleNumberChange = (event) => {
     console.log(event.target.value)
     setNewNumber(event.target.value)
   }
 
-  const HandleFilter = (event) => {
-    console.log('HandleFilter')
+  const handleFilter = (event) => {
+    console.log(event.target.value)
     setNewFilter(event.target.value)
   }
 
-  const filterResult = () => {
+  const filterResult = (event) => {
     console.log('filterResult')
     let temp = []
     for (var element of persons) {
       let db = element.name.toLowerCase()
-      if (db.includes(filter.toLowerCase())) {
+      if (db.includes(newFilter.toLowerCase())) {
         temp.push(element)
       }
     }
@@ -62,28 +62,54 @@ const App = () => {
 
   const personsToShow = filterResult()
 
-
   return (
     <div>
-      <h2>Phonebook</h2>
+        <h2>Phonebook</h2>
+        <Filter newFilter={newFilter} handleFilter={handleFilter} />
+
+        <h3>add a new</h3>
+        <PersonForm addPerson={addPerson} newName={newName} handleNameChange={handleNameChange}
+        newNumber={newNumber} handleNumberChange={handleNumberChange}/>
+
+        <h3>Numbers</h3>
+        <Numbers personsToShow={personsToShow}/>
+    </div>
+  )
+}
+
+const Filter = ({newFilter, handleFilter}) => {
+  return (
+    <>
       <div>
         <p>
-          filter shown with <input value={filter} onChange={HandleFilter}/>
+          filter shown with <input value={newFilter} onChange={handleFilter}/>
         </p>
       </div>
-      <h2>add a new</h2>
+    </>
+  )
+}
+
+const PersonForm = ({addPerson, newName, handleNameChange, newNumber, handleNumberChange}) => {
+  return (
+    <>
       <form onSubmit={addPerson}>
         <div>
-          name: <input value={newName} onChange={HandleNameChange}/>
+          name: <input value={newName} onChange={handleNameChange}/>
         </div>
         <div>
-          number: <input value={newNumber} onChange={HandleNumberChange}/>
+          number: <input value={newNumber} onChange={handleNumberChange}/>
         </div>
         <div>
           <button type="submit">add</button>
         </div>
       </form>
-      <h2>Numbers</h2>
+    </>
+  )
+}
+
+const Numbers = ({personsToShow}) => {
+  return (
+    <>
       <div>
         {personsToShow.map(element => {
           return (
@@ -93,10 +119,7 @@ const App = () => {
           )
         })}
       </div>
-    </div>
+    </>
   )
 }
-
-
-
 export default App
