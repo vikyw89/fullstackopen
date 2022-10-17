@@ -46,14 +46,11 @@ const Part = ({part}) => {
 
 const Total = ({total}) => {
     console.log('Total', total)
-    let totalCourse = 0
-    for (let element of total) {
-        totalCourse += element.exercises
-    }
+    const totalExercises = total.reduce((s, p) => p.exercises + s, 0)
     return (
         <>
         <p>
-            <b>total of {totalCourse} exercises</b>
+            <b>total of {totalExercises} exercises</b>
         </p>
         </>
     )
