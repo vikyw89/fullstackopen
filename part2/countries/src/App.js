@@ -3,51 +3,67 @@ import { useState, useEffect } from 'react';
 
 const Display = ({showCountries}) => {
   console.log('Display')
-  var cases = []
   if (showCountries.length > 10) {
-    cases = 'tooMany'
+    return (
+      <div>
+          Too many matches, specify another filter
+      </div>
+    )
   }
   if ((showCountries.length > 1) && (showCountries.length <= 10)) {
-    cases = 'several'
+    return (
+      <>
+        <ShowNames showCountries={showCountries}/>
+      </>
+    )
   }
   if (showCountries.length === 1 ) {
-    cases = 'onlyOne'
-  }
-
-  return (
-    <>
-      {cases === 'tooMany' &&
-        <div>
-          Too many matches, specify another filter
-        </div>
-      }
-
-      {cases === 'several' &&
-        <ShowNames showCountries={showCountries}/>
-      }
-
-      {cases === 'onlyOne' &&
+    return (
+      <>
         <ShowDetail showCountries={showCountries}/>
-      }
-    </>
-  )
+      </>
+    )
+  }
 }
 
 const ShowNames = ({showCountries}) => {
+  console.log('ShowNames')
   return (
     <>
-      {showCountries.map(element => {
+      {showCountries.map((element, index) => {
         return (
-          <div key={element.name.common}>
-            {element.name.common}
-          </div>
+          <DisplayMinimized key={index} element={element} index={index}/>
         )
       })}
     </>
   )
 }
 
+const DisplayMinimized = ({element, index}) => {
+  console.log('DisplayMinimized', element, index)
+  const [show, setShow] = useState(-1)
+  const handleClick = (index) => {
+    if (index===show) {
+      setShow(-1)
+    } else {
+      setShow(index)
+    }
+  } 
+  return (
+    <div>
+      {element.name.common}
+      <button onClick={()=> handleClick(index)}>
+        {show === index ? 'hide': 'show'}
+      </button>
+      {show === index &&
+        <ShowDetail showCountries={[element]}/>
+      }
+    </div>
+  )
+}
+
 const ShowDetail = ({showCountries}) => {
+  console.log('ShowDetail', showCountries)
   return (
     <>
       {showCountries.map(element => {
