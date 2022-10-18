@@ -47,20 +47,15 @@ const App = () => {
     setNewFilter(event.target.value)
   }
 
-  const filterResult = (event) => {
-    console.log('filterResult')
-    let temp = []
-    for (var element of persons) {
-      let db = element.name.toLowerCase()
-      if (db.includes(newFilter.toLowerCase())) {
-        temp.push(element)
-      }
+  const myFilter = (props) => {
+    if (props.name.includes(newFilter)) {
+      return true
+    } else {
+      return false
     }
-    console.log('return', temp)
-    return temp
   }
 
-  const personsToShow = filterResult()
+  const personsToShow = persons.filter(myFilter)
 
   return (
     <div>
