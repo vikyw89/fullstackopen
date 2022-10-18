@@ -56,7 +56,7 @@ const App = () => {
   }
 
   const myFilter = (props) => {
-    if (props.name.includes(newFilter)) {
+    if (props.name.toLowerCase().includes(newFilter.toLowerCase())) {
       return true
     } else {
       return false
