@@ -1,6 +1,8 @@
 import axios from 'axios'
 import { useState, useEffect } from 'react';
 
+const api_key = process.env.REACT_APP_API_KEY
+
 const Display = ({showCountries}) => {
   console.log('Display')
   if (showCountries.length > 10) {
@@ -83,9 +85,40 @@ const ShowDetail = ({showCountries}) => {
             <Languages language={element.languages}/>
             <br></br>
             <img src={element.flags.png} alt='flags'/>
+            <WeatherDisplay capital={element.capital} />
           </div>
         )
       })}
+    </>
+  )
+}
+
+const WeatherDisplay = ({capital}) => {
+  console.log('WeatherDisplay', capital)
+  const [weather, setWeather] = useState([])
+
+  const hookweather = () => {
+    console.log('effect')
+    axios
+      .get(`https://api.openweathermap.org/data/2.5/weather?q=${capital}&units=metric&APPID=${api_key}`)
+      .then(response => {
+        console.log('promise fulfilled')
+        setWeather(response.data)
+      })
+  }
+
+  useEffect(hookweather, [capital])
+  console.log('weather', weather)
+  console.log('capital', capital)
+  return (
+    <>
+      <h3>
+        Weather in {capital} :
+      </h3>
+      <p>
+        temperature : {weather.main.temp}
+      </p>
+      <img src={`this one too`} alt='weather' />
     </>
   )
 }
