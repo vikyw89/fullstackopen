@@ -95,7 +95,7 @@ const ShowDetail = ({showCountries}) => {
 
 const WeatherDisplay = ({capital}) => {
   console.log('WeatherDisplay', capital)
-  const [weather, setWeather] = useState([])
+  const [weather, setWeather] = useState()
 
   const hookweather = () => {
     console.log('effect')
@@ -108,6 +108,8 @@ const WeatherDisplay = ({capital}) => {
   }
 
   useEffect(hookweather, [capital])
+
+  if (!weather) { return null }
   console.log('weather', weather)
   console.log('capital', capital)
   return (
@@ -116,9 +118,12 @@ const WeatherDisplay = ({capital}) => {
         Weather in {capital} :
       </h3>
       <p>
-        temperature : {weather.main.temp}
+        temperature {weather.main.temp} °C
       </p>
-      <img src={`this one too`} alt='weather' />
+      <img src={`http://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`} alt='weather' />
+      <p>
+        wind {weather.wind.speed } m/s
+      </p>
     </>
   )
 }
@@ -153,6 +158,8 @@ function App() {
 
   useEffect(hook, [])
 
+  if (!countries) { return null }
+
   const handleFilter = (event) => {
     console.log(event.target.value)
     setFilter(event.target.value)
@@ -167,7 +174,6 @@ function App() {
   }
 
   const showCountries = countries.filter(showFilter)
-  
 
   return (
     <div>
