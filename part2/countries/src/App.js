@@ -3,46 +3,90 @@ import { useState, useEffect } from 'react';
 
 const api_key = process.env.REACT_APP_API_KEY
 
-const Display = ({showCountries}) => {
-  console.log('Display')
-  if (showCountries.length > 10) {
-    return (
-      <div>
-          Too many matches, specify another filter
-      </div>
-    )
+
+function App() {
+  const [countries, setCountries] = useState([])
+  const [filter, setFilter] = useState('')
+
+  useEffect(() => {
+    console.log('fetchingCountries')
+    axios
+      .get('https://restcountries.com/v3.1/all')
+      .then(response => {
+        console.log('countriesFetched')
+        setCountries(response.data)
+      })
+  }, [])
+
+  const handleFilter = (event) => {
+    console.log(event.target.value)
+    setFilter(event.target.value)
   }
-  if ((showCountries.length > 1) && (showCountries.length <= 10)) {
+
+  const showFilter = (props) => {
+    if (props.name.common.toLowerCase().includes(filter.toLowerCase())){
+      return true
+    } else {
+      return false
+    }
+  }
+
+  const showCountries = countries.filter(showFilter)
+
+
+  return (
+    <div>
+      <div>
+        find countries <input value={filter} onChange={handleFilter}/>
+      </div>
+      <div>
+        <Display countryList={showCountries}/>
+      </div>
+    </div>
+  )
+}
+
+const Display = ({countryList}) => {
+  console.log('Display')
+  if (countryList.length > 10) {
     return (
       <>
-        <ShowNames showCountries={showCountries}/>
+          Too many matches, specify another filter
       </>
     )
   }
-  if (showCountries.length === 1 ) {
+  if ((countryList.length > 1) && (countryList.length <= 10)) {
     return (
       <>
-        <ShowDetail showCountries={showCountries}/>
+        <ShowTen countryList={countryList}/>
+      </>
+    )
+  }
+  if (countryList.length === 1 ) {
+    return (
+      <>
+        <DisplayMaximized country={countryList[0]}/>
       </>
     )
   }
 }
 
-const ShowNames = ({showCountries}) => {
-  console.log('ShowNames')
+const ShowTen = ({countryList}) => {
+  console.log('ShowTen')
   return (
     <>
-      {showCountries.map((element, index) => {
+      {countryList.map((country, index) => {
         return (
-          <DisplayMinimized key={index} element={element} index={index}/>
+          <DisplayMinimized key={index} country={country} index={index}/>
         )
       })}
     </>
   )
 }
 
-const DisplayMinimized = ({element, index}) => {
-  console.log('DisplayMinimized', element, index)
+
+const DisplayMinimized = ({country, index}) => {
+  console.log('DisplayMinimized', country, index)
   const [show, setShow] = useState(-1)
   const handleClick = (index) => {
     if (index===show) {
@@ -53,65 +97,57 @@ const DisplayMinimized = ({element, index}) => {
   } 
   return (
     <div>
-      {element.name.common}
+      {country.name.common}
       <button onClick={()=> handleClick(index)}>
         {show === index ? 'hide': 'show'}
       </button>
       {show === index &&
-        <ShowDetail showCountries={[element]}/>
+        <DisplayMaximized country={country}/>
       }
     </div>
   )
 }
 
-const ShowDetail = ({showCountries}) => {
-  console.log('ShowDetail', showCountries)
+const DisplayMaximized = ({country}) => {
+  console.log('DisplayMaximized', country)
   return (
-    <>
-      {showCountries.map(element => {
-        return (
-          <div key={element.name.common}>
-            <h1>
-              {element.name.common}
-            </h1>
-            <p>
-              capital {element.capital}
-              <br></br>
-              area {element.area}
-            </p>
-            <h3>
-              languages :
-            </h3>
-            <Languages language={element.languages}/>
-            <br></br>
-            <img src={element.flags.png} alt='flags'/>
-            <WeatherDisplay capital={element.capital} />
-          </div>
-        )
-      })}
-    </>
+    <div>
+      <h1>
+        {country.name.common}
+      </h1>
+      <p>
+        capital {country.capital}
+        <br></br>
+        area {country.area}
+      </p>
+      <h3>
+        languages :
+      </h3>
+      <Languages language={country.languages}/>
+      <br></br>
+      <img src={country.flags.png} alt='flags'/>
+      <DisplayWeather capital={country.capital} />
+    </div>
   )
 }
 
-const WeatherDisplay = ({capital}) => {
-  console.log('WeatherDisplay', capital)
-  const [weather, setWeather] = useState()
 
-  const hookweather = () => {
-    console.log('effect')
+const DisplayWeather = ({capital}) => {
+  console.log('DisplayWeather', capital)
+  const [weather, setWeather] = useState([])
+
+  useEffect(() => {
+    console.log('fetchingWeather')
     axios
       .get(`https://api.openweathermap.org/data/2.5/weather?q=${capital}&units=metric&APPID=${api_key}`)
       .then(response => {
-        console.log('promise fulfilled')
+        console.log('weatherFetched')
         setWeather(response.data)
       })
-  }
+  }, [capital])
 
-  useEffect(hookweather, [capital])
+  if (weather.length === 0) { return null }
 
-  if (!weather) { return null }
-  console.log('weather', weather)
-  console.log('capital', capital)
   return (
     <>
       <h3>
@@ -141,53 +177,6 @@ const Languages = ({language}) => {
     </>
   )
 }
-
-function App() {
-  const [countries, setCountries] = useState([])
-  const [filter, setFilter] = useState('')
-
-  const hook = () => {
-    console.log('effect')
-    axios
-      .get('https://restcountries.com/v3.1/all')
-      .then(response => {
-        console.log('promise fulfilled')
-        setCountries(response.data)
-      })
-  }
-
-  useEffect(hook, [])
-
-  if (!countries) { return null }
-
-  const handleFilter = (event) => {
-    console.log(event.target.value)
-    setFilter(event.target.value)
-  }
-
-  const showFilter = (props) => {
-    if (props.name.common.toLowerCase().includes(filter.toLowerCase())){
-      return true
-    } else {
-      return false
-    }
-  }
-
-  const showCountries = countries.filter(showFilter)
-
-
-  return (
-    <div>
-      <div>
-        find countries <input value={filter} onChange={handleFilter}/>
-      </div>
-      <div>
-        <Display showCountries={showCountries}/>
-      </div>
-    </div>
-  )
-}
-
 
 export default App;
 
