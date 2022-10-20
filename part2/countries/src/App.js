@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 
 const api_key = process.env.REACT_APP_API_KEY
 
-
 function App() {
   const [filter, setFilter] = useState('')
 
@@ -26,17 +25,7 @@ function App() {
 
 const Display = ({filter}) => {
   console.log('Display')
-  const [countries, setCountries] = useState([])
-
-  const showFilter = (props) => {
-    if (props.name.common.toLowerCase().includes(filter.toLowerCase())){
-      return true
-    } else {
-      return false
-    }
-  }
-
-  const countryList = countries.filter(showFilter)
+  const [countries, setCountries] = useState()
 
   useEffect(() => {
     console.log('fetchingCountries')
@@ -48,6 +37,18 @@ const Display = ({filter}) => {
       })
   }, [])
 
+  if (!countries) {return null}
+
+  const showFilter = (props) => {
+    if (props.name.common.toLowerCase().includes(filter.toLowerCase())){
+      return true
+    } else {
+      return false
+    }
+  }
+
+  const countryList = countries.filter(showFilter)
+  
   if (countryList.length > 10) {
     return (
       <>
@@ -123,7 +124,7 @@ const DisplayMaximized = ({country}) => {
 
 const DisplayWeather = ({capital}) => {
   console.log('DisplayWeather', capital)
-  const [weather, setWeather] = useState([])
+  const [weather, setWeather] = useState()
 
   useEffect(() => {
     console.log('fetchingWeather')
@@ -135,7 +136,7 @@ const DisplayWeather = ({capital}) => {
       })
   }, [capital])
 
-  if (weather.length === 0) { return null }
+  if (!weather) { return null }
 
   return (
     <>
