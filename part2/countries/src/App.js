@@ -5,8 +5,38 @@ const api_key = process.env.REACT_APP_API_KEY
 
 
 function App() {
-  const [countries, setCountries] = useState([])
   const [filter, setFilter] = useState('')
+
+  const handleFilter = (event) => {
+    console.log(event.target.value)
+    setFilter(event.target.value)
+  }
+
+  return (
+    <div>
+      <div>
+        find countries <input value={filter} onChange={handleFilter}/>
+      </div>
+      <div>
+        <Display filter={filter}/>
+      </div>
+    </div>
+  )
+}
+
+const Display = ({filter}) => {
+  console.log('Display')
+  const [countries, setCountries] = useState([])
+
+  const showFilter = (props) => {
+    if (props.name.common.toLowerCase().includes(filter.toLowerCase())){
+      return true
+    } else {
+      return false
+    }
+  }
+
+  const countryList = countries.filter(showFilter)
 
   useEffect(() => {
     console.log('fetchingCountries')
@@ -18,36 +48,6 @@ function App() {
       })
   }, [])
 
-  const handleFilter = (event) => {
-    console.log(event.target.value)
-    setFilter(event.target.value)
-  }
-
-  const showFilter = (props) => {
-    if (props.name.common.toLowerCase().includes(filter.toLowerCase())){
-      return true
-    } else {
-      return false
-    }
-  }
-
-  const showCountries = countries.filter(showFilter)
-
-
-  return (
-    <div>
-      <div>
-        find countries <input value={filter} onChange={handleFilter}/>
-      </div>
-      <div>
-        <Display countryList={showCountries}/>
-      </div>
-    </div>
-  )
-}
-
-const Display = ({countryList}) => {
-  console.log('Display')
   if (countryList.length > 10) {
     return (
       <>
@@ -58,7 +58,9 @@ const Display = ({countryList}) => {
   if ((countryList.length > 1) && (countryList.length <= 10)) {
     return (
       <>
-        <ShowTen countryList={countryList}/>
+        {countryList.map((country, index) => (
+          <DisplayMinimized key={index} country={country} index={index}/>
+        ))}
       </>
     )
   }
@@ -69,19 +71,6 @@ const Display = ({countryList}) => {
       </>
     )
   }
-}
-
-const ShowTen = ({countryList}) => {
-  console.log('ShowTen')
-  return (
-    <>
-      {countryList.map((country, index) => {
-        return (
-          <DisplayMinimized key={index} country={country} index={index}/>
-        )
-      })}
-    </>
-  )
 }
 
 
@@ -167,13 +156,11 @@ const DisplayWeather = ({capital}) => {
 const Languages = ({language}) => {
   return (
     <>
-      {Object.values(language).map(element => {
-        return (
+      {Object.values(language).map(element => (
           <li key={element}>
             {element}
           </li>
-        )
-      })}
+      ))}
     </>
   )
 }
