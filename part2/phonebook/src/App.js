@@ -61,16 +61,29 @@ const AddPersons = ({persons, setPersons}) => {
     console.log('addPerson')
     event.preventDefault()
 
-    for (let element of persons) {
-      if (element.name === newName) {
-        alert(`${newName} is already added to phonebook`)
-        return
-      }
-    }
     const newPerson= {
       name: newName,
       number: newNumber
     }
+
+    for (let person of persons) {
+      if (person.name.toLowerCase() === newName.toLowerCase()) {
+        if(window.confirm(`${newName} is already added to phonebook, replace the old number with the new one ?`)) {
+          console.log('update', newPerson)
+          personsServices
+            .update(person.id, newPerson)
+            .then (response => {
+              setPersons(persons.map(element => element.id !== person.id ? element : response))
+              setNewName('')
+              setNewNumber('')
+            })
+          return
+        } else {
+          return
+        }
+      }
+    }
+
     personsServices
       .create(newPerson)
       .then(response => {
@@ -109,10 +122,11 @@ const Filter = ({newFilter, handleFilter}) => {
 }
 
 const Numbers = ({personsToShow, setPersons, persons}) => {
-  const handleClick = (id) => {
+  const handleClick = (id,name) => {
     console.log('handleClick')
 
-    personsServices
+    if(window.confirm(`Delete ${name} ?`)) {
+      personsServices
       .deleteData(id)
       .then (response => {
         console.log('response', response)
@@ -122,7 +136,10 @@ const Numbers = ({personsToShow, setPersons, persons}) => {
             setPersons(response)
           })  
       })
+    } else {
+      return
     }
+  }
 
   return (
     <>
@@ -131,7 +148,7 @@ const Numbers = ({personsToShow, setPersons, persons}) => {
           return (
             <div key={element.id}>
               {element.name} {element.number}
-              <button onClick={() => {if(window.confirm('Delete the item?')) {handleClick(element.id)}}} value={element.id}>delete</button>
+              <button onClick={() => handleClick(element.id, element.name)} value={element.id}>delete</button>
             </div>
           )
         })}
