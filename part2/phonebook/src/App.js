@@ -9,7 +9,7 @@ const App = () => {
     personsServices
       .getAll()
       .then(response => {
-        setPersons(response.data)
+        setPersons(response)
       })
   }, [])
 
@@ -37,7 +37,7 @@ const App = () => {
         <AddPersons persons={persons} setPersons={setPersons}/>
 
         <h3>Numbers</h3>
-        <Numbers personsToShow={personsToShow}/>
+        <Numbers personsToShow={personsToShow} setPersons={setPersons} persons={persons}/>
     </div>
   )
 }
@@ -74,11 +74,11 @@ const AddPersons = ({persons, setPersons}) => {
     personsServices
       .create(newPerson)
       .then(response => {
-        setPersons(persons.concat(response.data))
+        setPersons(persons.concat(response))
         setNewName('')
         setNewNumber('')
       })
-    }
+  }
   return (
     <>
       <form onSubmit={addPerson}>
@@ -108,7 +108,22 @@ const Filter = ({newFilter, handleFilter}) => {
   )
 }
 
-const Numbers = ({personsToShow}) => {
+const Numbers = ({personsToShow, setPersons, persons}) => {
+  const handleClick = (id) => {
+    console.log('handleClick')
+
+    personsServices
+      .deleteData(id)
+      .then (response => {
+        console.log('response', response)
+        personsServices
+          .getAll()
+          .then (response => {
+            setPersons(response)
+          })  
+      })
+    }
+
   return (
     <>
       <div>
@@ -116,6 +131,7 @@ const Numbers = ({personsToShow}) => {
           return (
             <div key={element.id}>
               {element.name} {element.number}
+              <button onClick={() => {if(window.confirm('Delete the item?')) {handleClick(element.id)}}} value={element.id}>delete</button>
             </div>
           )
         })}
