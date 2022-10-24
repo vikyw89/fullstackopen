@@ -1,22 +1,17 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios'
-import AddPersons from './components/AddPersons'
+import personsServices from './services/persons'
 
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newFilter, setNewFilter] = useState('')
 
-  const hook = () => {
-    console.log('effect')
-    axios
-      .get('http://localhost:3001/persons')
+  useEffect(() => {
+    personsServices
+      .getAll()
       .then(response => {
-        console.log('promise fulfilled')
         setPersons(response.data)
       })
-  }
-  
-  useEffect(hook, [])
+  }, [])
 
   const handleFilter = (event) => {
     console.log(event.target.value)
@@ -44,6 +39,60 @@ const App = () => {
         <h3>Numbers</h3>
         <Numbers personsToShow={personsToShow}/>
     </div>
+  )
+}
+
+const AddPersons = ({persons, setPersons}) => {
+  console.log('PersonForm')
+  const [newName, setNewName] = useState('')
+  const [newNumber, setNewNumber] = useState('')
+
+  const handleNameChange = (event) => {
+    console.log(event.target.value)
+    setNewName(event.target.value)
+  }
+
+  const handleNumberChange = (event) => {
+    console.log(event.target.value)
+    setNewNumber(event.target.value)
+  }
+
+  const addPerson = (event) => {
+    console.log('addPerson')
+    event.preventDefault()
+
+    for (let element of persons) {
+      if (element.name === newName) {
+        alert(`${newName} is already added to phonebook`)
+        return
+      }
+    }
+    const newPerson= {
+      name: newName,
+      number: newNumber
+    }
+    personsServices
+      .create(newPerson)
+      .then(response => {
+        setPersons(persons.concat(response.data))
+        setNewName('')
+        setNewNumber('')
+      })
+    }
+  return (
+    <>
+      <form onSubmit={addPerson}>
+        <div>
+          name: <input value={newName} onChange={handleNameChange}/>
+        </div>
+        <div>
+          number: <input value={newNumber} onChange={handleNumberChange}/>
+        </div>
+        <div>
+          <button type="submit">add</button>
+        </div>
+      </form>
+    </>
   )
 }
 
