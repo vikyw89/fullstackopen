@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react'
 import personsServices from './services/persons'
+import './index.css'
 
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newFilter, setNewFilter] = useState('')
+  const [notif, setNotif] = useState('')
 
   useEffect(() => {
     personsServices
@@ -29,20 +31,33 @@ const App = () => {
   const personsToShow = persons.filter(myFilter)
 
   return (
-    <div>
-        <h2>Phonebook</h2>
-        <Filter newFilter={newFilter} handleFilter={handleFilter} />
+    <div className='container-sm p-3'>
+        <h1>Phonebook</h1>
+        <MessagePop notif={notif} />
+        <Filter newFilter={newFilter} handleFilter={handleFilter}/>
 
-        <h3>add a new</h3>
-        <AddPersons persons={persons} setPersons={setPersons}/>
+        <h2>add a new</h2>
+        <AddPersons persons={persons} setPersons={setPersons} setNotif={setNotif}/>
 
-        <h3>Numbers</h3>
+        <h2>Numbers</h2>
         <Numbers personsToShow={personsToShow} setPersons={setPersons} persons={persons}/>
     </div>
   )
 }
 
-const AddPersons = ({persons, setPersons}) => {
+const MessagePop = ({notif}) => {
+  console.log('MessagePop', notif)
+  if (!notif) {
+    return
+  }
+  return (
+    <div className="fs-4 alert alert-info">
+        {notif}
+    </div>
+  )
+}
+
+const AddPersons = ({persons, setPersons, setMessage}) => {
   console.log('PersonForm')
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
@@ -74,8 +89,12 @@ const AddPersons = ({persons, setPersons}) => {
             .update(person.id, newPerson)
             .then (response => {
               setPersons(persons.map(element => element.id !== person.id ? element : response))
+              setNotif(`Added ${newName}`)
               setNewName('')
               setNewNumber('')
+              setTimeout(() => {
+                setNotif(null)
+              },5000)
             })
           return
         } else {
@@ -88,8 +107,12 @@ const AddPersons = ({persons, setPersons}) => {
       .create(newPerson)
       .then(response => {
         setPersons(persons.concat(response))
+        setNotif(`Added ${newName}`)
         setNewName('')
         setNewNumber('')
+        setTimeout(() => {
+          setNotif(null)
+        },5000)
       })
   }
   return (
@@ -102,7 +125,7 @@ const AddPersons = ({persons, setPersons}) => {
           number: <input value={newNumber} onChange={handleNumberChange}/>
         </div>
         <div>
-          <button type="submit">add</button>
+          <button type="submit" className="btn btn-primary">add</button>
         </div>
       </form>
     </>
