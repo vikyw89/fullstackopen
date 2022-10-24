@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios'
+import AddPersons from './components/AddPersons'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -38,7 +39,7 @@ const App = () => {
         <Filter newFilter={newFilter} handleFilter={handleFilter} />
 
         <h3>add a new</h3>
-        <PersonForm persons={persons} setPersons={setPersons}/>
+        <AddPersons persons={persons} setPersons={setPersons}/>
 
         <h3>Numbers</h3>
         <Numbers personsToShow={personsToShow}/>
@@ -54,61 +55,6 @@ const Filter = ({newFilter, handleFilter}) => {
           filter shown with <input value={newFilter} onChange={handleFilter}/>
         </p>
       </div>
-    </>
-  )
-}
-
-const PersonForm = ({persons, setPersons}) => {
-  console.log('PersonForm')
-  const [newName, setNewName] = useState('')
-  const [newNumber, setNewNumber] = useState('')
-
-  const handleNameChange = (event) => {
-    console.log(event.target.value)
-    setNewName(event.target.value)
-  }
-
-  const handleNumberChange = (event) => {
-    console.log(event.target.value)
-    setNewNumber(event.target.value)
-  }
-
-  const addPerson = (event) => {
-    console.log('addPerson')
-    event.preventDefault()
-
-    for (let element of persons) {
-      if (element.name === newName) {
-        alert(`${newName} is already added to phonebook`)
-        return
-      }
-    }
-    const personObject = {
-      name: newName,
-      number: newNumber
-    }
-    axios
-    .post('http://localhost:3001/persons', personObject)
-    .then(response => {
-      console.log(response)
-      setPersons(persons.concat(response.data))
-      setNewName('')
-      setNewNumber('')
-    })
-  }
-  return (
-    <>
-      <form onSubmit={addPerson}>
-        <div>
-          name: <input value={newName} onChange={handleNameChange}/>
-        </div>
-        <div>
-          number: <input value={newNumber} onChange={handleNumberChange}/>
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
     </>
   )
 }
