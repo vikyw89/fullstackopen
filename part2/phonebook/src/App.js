@@ -3,8 +3,6 @@ import axios from 'axios'
 
 const App = () => {
   const [persons, setPersons] = useState([])
-  const [newName, setNewName] = useState('')
-  const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
 
   const hook = () => {
@@ -18,42 +16,6 @@ const App = () => {
   }
   
   useEffect(hook, [])
-
-  const addPerson = (event) => {
-    console.log('addPerson')
-    event.preventDefault()
-
-    // Validating Input
-    for (let element of persons) {
-      if (element.name === newName) {
-        alert(`${newName} is already added to phonebook`)
-        return
-      }
-    }
-    const personObject = {
-      name: newName,
-      number: newNumber
-    }
-    axios
-    .post('http://localhost:3001/persons', personObject)
-    .then(response => {
-      console.log(response)
-      setPersons(persons.concat(response.data))
-      setNewName('')
-      setNewNumber('')
-    })
-
-  }
-
-  const handleNameChange = (event) => {
-    console.log(event.target.value)
-    setNewName(event.target.value)
-  }
-
-  const handleNumberChange = (event) => {
-    console.log(event.target.value)
-    setNewNumber(event.target.value)
-  }
 
   const handleFilter = (event) => {
     console.log(event.target.value)
@@ -76,8 +38,7 @@ const App = () => {
         <Filter newFilter={newFilter} handleFilter={handleFilter} />
 
         <h3>add a new</h3>
-        <PersonForm addPerson={addPerson} newName={newName} handleNameChange={handleNameChange}
-        newNumber={newNumber} handleNumberChange={handleNumberChange}/>
+        <PersonForm persons={persons} setPersons={setPersons}/>
 
         <h3>Numbers</h3>
         <Numbers personsToShow={personsToShow}/>
@@ -97,7 +58,44 @@ const Filter = ({newFilter, handleFilter}) => {
   )
 }
 
-const PersonForm = ({addPerson, newName, handleNameChange, newNumber, handleNumberChange}) => {
+const PersonForm = ({persons, setPersons}) => {
+  console.log('PersonForm')
+  const [newName, setNewName] = useState('')
+  const [newNumber, setNewNumber] = useState('')
+
+  const handleNameChange = (event) => {
+    console.log(event.target.value)
+    setNewName(event.target.value)
+  }
+
+  const handleNumberChange = (event) => {
+    console.log(event.target.value)
+    setNewNumber(event.target.value)
+  }
+
+  const addPerson = (event) => {
+    console.log('addPerson')
+    event.preventDefault()
+
+    for (let element of persons) {
+      if (element.name === newName) {
+        alert(`${newName} is already added to phonebook`)
+        return
+      }
+    }
+    const personObject = {
+      name: newName,
+      number: newNumber
+    }
+    axios
+    .post('http://localhost:3001/persons', personObject)
+    .then(response => {
+      console.log(response)
+      setPersons(persons.concat(response.data))
+      setNewName('')
+      setNewNumber('')
+    })
+  }
   return (
     <>
       <form onSubmit={addPerson}>
