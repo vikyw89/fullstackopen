@@ -40,7 +40,7 @@ const App = () => {
         <AddPersons persons={persons} setPersons={setPersons} setNotif={setNotif}/>
 
         <h2>Numbers</h2>
-        <Numbers personsToShow={personsToShow} setPersons={setPersons} persons={persons}/>
+        <Numbers personsToShow={personsToShow} setPersons={setPersons} persons={persons} setNotif={setNotif}/>
     </div>
   )
 }
@@ -50,11 +50,18 @@ const MessagePop = ({notif}) => {
   if (!notif) {
     return
   }
-  return (
-    <div className="fs-4 alert alert-info">
-        {notif}
-    </div>
-  )
+  if (notif.success) {
+    return (
+      <div className="fs-4 alert alert-success">
+          {notif.success}
+      </div>
+    )}
+  if (notif.error) {
+    return (
+      <div className="fs-4 alert alert-danger">
+          {notif.error}
+      </div>
+    )}
 }
 
 const AddPersons = ({persons, setPersons, setNotif}) => {
@@ -89,10 +96,18 @@ const AddPersons = ({persons, setPersons, setNotif}) => {
             .update(person.id, newPerson)
             .then (response => {
               setPersons(persons.map(element => element.id !== person.id ? element : response))
-              setNotif(`Added ${newName}`)
+              setNotif({success:`Added ${newName}`})
               setNewName('')
               setNewNumber('')
               setTimeout(() => {
+                setNotif(null)
+              },5000)
+            })
+            .catch(error => {
+              console.log('error')
+              setNotif({error:`Information of ${person.name} has already been removed from the server`})
+              setPersons(persons.filter(n => n.name !== newName))
+              setTimeout(()=> {
                 setNotif(null)
               },5000)
             })
@@ -107,7 +122,7 @@ const AddPersons = ({persons, setPersons, setNotif}) => {
       .create(newPerson)
       .then(response => {
         setPersons(persons.concat(response))
-        setNotif(`Added ${newName}`)
+        setNotif({success:`Added ${newName}`})
         setNewName('')
         setNewNumber('')
         setTimeout(() => {
@@ -125,7 +140,7 @@ const AddPersons = ({persons, setPersons, setNotif}) => {
           number: <input value={newNumber} onChange={handleNumberChange}/>
         </div>
         <div>
-          <button type="submit" className="btn btn-primary">add</button>
+          <button type="submit" className="btn btn-secondary">add</button>
         </div>
       </form>
     </>
@@ -144,7 +159,7 @@ const Filter = ({newFilter, handleFilter}) => {
   )
 }
 
-const Numbers = ({personsToShow, setPersons, persons}) => {
+const Numbers = ({personsToShow, setPersons, persons, setNotif}) => {
   const handleClick = (id,name) => {
     console.log('handleClick')
 
@@ -153,11 +168,20 @@ const Numbers = ({personsToShow, setPersons, persons}) => {
       .deleteData(id)
       .then (response => {
         console.log('response', response)
-        personsServices
-          .getAll()
-          .then (response => {
-            setPersons(response)
-          })  
+        setPersons(persons.filter(n => n.id !== id))
+        setNotif({success:`Information of ${name} removed from the server`})
+        setPersons(persons.filter(n => n.id !== id))
+        setTimeout(()=> {
+          setNotif(null)
+        },5000)
+      })
+      .catch(error => {
+        console.log('error')
+        setNotif({error:`Information of ${name} has already been removed from the server`})
+        setPersons(persons.filter(n => n.id !== id))
+        setTimeout(()=> {
+          setNotif(null)
+        },5000)
       })
     } else {
       return
