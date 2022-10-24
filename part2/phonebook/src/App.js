@@ -57,7 +57,7 @@ const MessagePop = ({notif}) => {
   )
 }
 
-const AddPersons = ({persons, setPersons, setMessage}) => {
+const AddPersons = ({persons, setPersons, setNotif}) => {
   console.log('PersonForm')
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
