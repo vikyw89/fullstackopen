@@ -9,10 +9,7 @@ const Numbers = ({personsToShow, setPersons, persons, setNotif}) => {
       personsServices
         .deleteData(id)
         .then (response => {
-          console.log('response', response)
-          console.log('persons', persons)
           setPersons(persons.filter(n => n.id !== id))
-          console.log('persons', persons)
           setNotif({success:`Information of ${name} removed from the server`})
           setTimeout(()=> {
             setNotif(null)
