@@ -1,5 +1,5 @@
 import React from "react"
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import personsServices from '../services/persons'
 
 const AddPersons = ({persons, setPersons, setNotif}) => {
@@ -24,36 +24,6 @@ const AddPersons = ({persons, setPersons, setNotif}) => {
       const newPerson= {
         name: newName,
         number: newNumber
-      }
-  
-      for (let person of persons) {
-        if (person.name.toLowerCase() === newName.toLowerCase()) {
-          if(window.confirm(`${newName} is already added to phonebook, replace the old number with the new one ?`)) {
-            console.log('update', newPerson)
-            personsServices
-              .update(person.id, newPerson)
-              .then (response => {
-                setPersons(persons.map(element => element.id !== person.id ? element : response))
-                setNotif({success:`Added ${newName}`})
-                setNewName('')
-                setNewNumber('')
-                setTimeout(() => {
-                  setNotif(null)
-                },5000)
-              })
-              .catch(error => {
-                console.log('error')
-                setNotif({error:`Information of ${person.name} has already been removed from the server`})
-                setPersons(persons.filter(n => n.name !== newName))
-                setTimeout(()=> {
-                  setNotif(null)
-                },5000)
-              })
-            return
-          } else {
-            return
-          }
-        }
       }
   
       personsServices
