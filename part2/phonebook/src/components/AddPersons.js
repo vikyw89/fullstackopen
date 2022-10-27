@@ -39,6 +39,13 @@ const AddPersons = ({persons, setPersons, setNotif}) => {
             setNotif(null)
           },5000)
         })
+        .catch(error => {
+          console.log(error.response.data.error)
+          setNotif({error: error.response.data.error})
+            setTimeout(() => {
+              setNotif(null)
+            },5000)
+        })
     } else {
       if(window.confirm(`${newName} already exists in contact, would you like to update it?`)) {
         const [oldPerson] = persons.filter( person => person.name === newName)
@@ -49,6 +56,13 @@ const AddPersons = ({persons, setPersons, setNotif}) => {
             setNotif({success:`${oldPerson.name}'s phone number has been updated`})
             setNewName('')
             setNewNumber('')
+            setTimeout(() => {
+              setNotif(null)
+            },5000)
+          })
+          .catch(error => {
+            console.log(error.response.data.error)
+            setNotif({error: error.response.data.error})
             setTimeout(() => {
               setNotif(null)
             },5000)
