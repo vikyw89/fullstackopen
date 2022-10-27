@@ -40,19 +40,21 @@ const AddPersons = ({persons, setPersons, setNotif}) => {
           },5000)
         })
     } else {
-      const [oldPerson] = persons.filter( person => person.name === newName)
-      console.log('line44',oldPerson)
-      personsServices
-        .update(oldPerson.id, newPerson)
-        .then(response => {
-          setPersons(persons.map(person => person.id !== response.id ? person : response))
-          setNotif({success:`${oldPerson.name} already exists in contact, we just updated the phone number`})
-          setNewName('')
-          setNewNumber('')
-          setTimeout(() => {
-            setNotif(null)
-          },5000)
-        })
+      if(window.confirm(`${newName} already exists in contact, would you like to update it?`)) {
+        const [oldPerson] = persons.filter( person => person.name === newName)
+        personsServices
+          .update(oldPerson.id, newPerson)
+          .then(response => {
+            setPersons(persons.map(person => person.id !== response.id ? person : response))
+            setNotif({success:`${oldPerson.name}'s phone number has been updated`})
+            setNewName('')
+            setNewNumber('')
+            setTimeout(() => {
+              setNotif(null)
+            },5000)
+          })
+      } else {
+      }
     }
   }
   return (
