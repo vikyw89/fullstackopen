@@ -1,8 +1,9 @@
+require("dotenv").config()
 const express = require('express')
 const app = express()
 const cors = require('cors')
 const mongoose = require('mongoose')
-require("dotenv").config()
+require('express-async-errors')
 const middleware = require('./utils/middleware')
 const blogsRouter = require('./controllers/blogs')
 
