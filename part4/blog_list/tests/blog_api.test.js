@@ -56,6 +56,20 @@ test("deleting a single blog", async () => {
     const blogsAtEnd = await helper.blogsInDb()
     assert.strictEqual(blogsAtEnd.length, blogsAtStart.length - 1)
 })
+
+test("updating a single blog", async () => {
+  const blogsAtStart = await helper.blogsInDb()
+  const blogToUpdate = blogsAtStart[0]
+  blogToUpdate.likes = blogToUpdate.likes + 1
+  console.log("initial",blogToUpdate)
+  await api
+    .put(`/api/blogs/${blogToUpdate.id}`)
+    .send(blogToUpdate)
+    .expect(201)
+    const blogsAtEnd = await helper.blogsInDb()
+    console.log("updated",blogsAtEnd[0])
+    assert.strictEqual(blogsAtEnd[0].likes, blogToUpdate.likes)
+})
 // test('the first note is about HTTP methods', async () => {
 //   const response = await api.get('/api/notes')
 
