@@ -35,6 +35,19 @@ test('unique identifier property of the blog posts is named id', async () => {
     })
 })
 
+test('HTTP POST request to the /api/blogs URL successfully creates a new blog post', async () => {
+  const blogsAtStart = await helper.blogsInDb()
+
+  await api.post('/api/blogs')
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+    const blogsAtTheEnd = await helper.blogsInDb()
+    assert.strictEqual(blogsAtTheEnd.length, blogsAtStart.length + 1)
+})
+
+
+
 // test('the first note is about HTTP methods', async () => {
 //   const response = await api.get('/api/notes')
 
